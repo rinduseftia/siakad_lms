@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIAKAD - Sistem Informasi Akademik</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <!-- ============================================================
+     HALAMAN LOGIN
+============================================================ -->
+    <div id="login-page" class="login-wrapper">
+      <div class="login-card">
+        <div class="login-logo">
+          <div class="logo-icon">🎓</div>
+          <h1>SIAKAD</h1>
+          <p>Sistem Informasi Akademik</p>
+        </div>
+        <div
+          id="login-error"
+          class="alert alert-danger"
+          style="display: none"
+        ></div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="username" placeholder="Masukkan username" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Masukkan password"
+          />
+        </div>
+        <button class="btn btn-primary btn-block" onclick="doLogin()">
+          Login
+        </button>
+        <p class="login-hint">Default: admin / admin123</p>
+      </div>
+    </div>
+
+    <!-- ============================================================
+     HALAMAN DASHBOARD (setelah login)
+============================================================ -->
+    <div id="main-app" class="app" style="display: none">
+      <!-- SIDEBAR -->
+      <nav class="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-icon">🎓</span>
+          <div>
+            <div class="brand-title">SIAKAD</div>
+            <div class="brand-sub">Sistem Informasi Akademik</div>
+          </div>
+        </div>
+        <div class="nav-section">Menu Utama</div>
+        <a
+          href="#"
+          class="nav-item active"
+          onclick="showPage('dashboard', this)"
+        >
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('mahasiswa', this)">
+          <span class="nav-icon">👨‍🎓</span> Data Mahasiswa
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('dosen', this)">
+          <span class="nav-icon">👨‍🏫</span> Data Dosen
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('matkul', this)">
+          <span class="nav-icon">📚</span> Mata Kuliah
+        </a>
+        <div class="sidebar-bottom">
+          <a href="#" class="nav-item" onclick="openModal('modal-password')">
+            <span class="nav-icon">🔑</span>
+            Tukar Password
+          </a>
+          <a href="#" class="nav-item nav-logout" onclick="doLogout()">
+            <span class="nav-icon">🚪</span> Logout
+          </a>
+        </div>
+      </nav>
+
+      <!-- MAIN CONTENT -->
+      <div class="main-content">
+        <header class="topbar">
+          <div class="header-left">
+            <div class="logo-box">🎓</div>
+            <div>
+              <h2 class="header-title" id="page-heading">SIAKAD</h2>
+              <p class="header-subtitle">Sistem Informasi Akademik</p>
+            </div>
+          </div>
+          <div class="topbar-user">
+            <span id="admin-name">Administrator</span>
+            <div class="avatar">AD</div>
+          </div>
+        </header>
+
+        <div class="content-area">
+          <!-- ======= PAGE: DASHBOARD ======= -->
+          <section id="page-dashboard" class="page active">
+            <p class="welcome-text">
+              Selamat datang, <strong id="welcome-name">Administrator</strong>
+            </p>
+
+            <div class="stat-grid">
+              <div
+                class="stat-card blue"
+                onclick="
+                  showPage(
+                    'mahasiswa',
+                    document.querySelectorAll('.nav-item')[1],
+                  )
+                "
+              >
+                <div class="stat-body">
+                  <div class="stat-num" id="stat-mhs">–</div>
+                  <div class="stat-lbl">Total Mahasiswa</div>
+                </div>
+                <div class="stat-icon">👨‍🎓</div>
+              </div>
+              <div
+                class="stat-card green"
+                onclick="
+                  showPage('dosen', document.querySelectorAll('.nav-item')[2])
+                "
+              >
+                <div class="stat-body">
+                  <div class="stat-num" id="stat-dsn">–</div>
+                  <div class="stat-lbl">Total Dosen</div>
+                </div>
+                <div class="stat-icon">👨‍🏫</div>
+              </div>
+              <div
+                class="stat-card orange"
+                onclick="
+                  showPage('matkul', document.querySelectorAll('.nav-item')[3])
+                "
+              >
+                <div class="stat-body">
+                  <div class="stat-num" id="stat-mk">–</div>
+                  <div class="stat-lbl">Total Mata Kuliah</div>
+                </div>
+                <div class="stat-icon">📚</div>
+              </div>
+            </div>
+
+            <div class="tables-row">
+              <div class="table-widget">
+                <div class="widget-header blue">Mahasiswa Terbaru</div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>NIM</th>
+                      <th>Nama</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbl-mhs-terbaru">
+                    <tr>
+                      <td colspan="2">Memuat...</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="widget-footer">
+                  <a
+                    href="#"
+                    onclick="
+                      showPage(
+                        'mahasiswa',
+                        document.querySelectorAll('.nav-item')[1],
+                      )
+                    "
+                    >Lihat Semua →</a
+                  >
+                </div>
+              </div>
+              <div class="table-widget">
+                <div class="widget-header green">Dosen Terbaru</div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>NIDN</th>
+                      <th>Nama</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbl-dsn-terbaru">
+                    <tr>
+                      <td colspan="2">Memuat...</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="widget-footer">
+                  <a
+                    href="#"
+                    onclick="
+                      showPage(
+                        'dosen',
+                        document.querySelectorAll('.nav-item')[2],
+                      )
+                    "
+                    >Lihat Semua →</a
+                  >
+                </div>
+              </div>
+              <div class="table-widget">
+                <div class="widget-header orange">Mata Kuliah Terbaru</div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Kode</th>
+                      <th>Nama</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbl-mk-terbaru">
+                    <tr>
+                      <td colspan="2">Memuat...</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="widget-footer">
+                  <a
+                    href="#"
+                    onclick="
+                      showPage(
+                        'matkul',
+                        document.querySelectorAll('.nav-item')[3],
+                      )
+                    "
+                    >Lihat Semua →</a
+                  >
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ======= PAGE: MAHASISWA ======= -->
+          <section id="page-mahasiswa" class="page">
+            <div class="page-toolbar">
+              <input
+                type="text"
+                id="search-mhs"
+                placeholder="🔍 Cari mahasiswa..."
+                oninput="filterTable('tbl-mahasiswa', this.value)"
+              />
+              <button
+                class="btn btn-primary"
+                onclick="openModal('modal-mhs', clearFormMhs)"
+              >
+                + Tambah Mahasiswa
+              </button>
+            </div>
+            <div class="table-card">
+              <table id="tbl-mahasiswa">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>NIM</th>
+                    <th>Nama</th>
+                    <th>Jurusan</th>
+                    <th>Program Studi</th>
+                    <th>Email</th>
+                    <th>Agama</th>
+                    <th>Status</th>
+                    <th>Jenis Kelamin</th>
+                    <th>Tempat Lahir</th>
+                    <th>Tanggal Lahir</th>
+                    <th>Alamat</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-mhs-body">
+                  <tr>
+                    <td colspan="7">Memuat...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ======= PAGE: DOSEN ======= -->
+          <section id="page-dosen" class="page">
+            <div class="page-toolbar">
+              <input
+                type="text"
+                placeholder="🔍 Cari dosen..."
+                oninput="filterTable('tbl-dosen', this.value)"
+              />
+              <button
+                class="btn btn-primary"
+                onclick="openModal('modal-dsn', clearFormDsn)"
+              >
+                + Tambah Dosen
+              </button>
+            </div>
+            <div class="table-card">
+              <table id="tbl-dosen">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>NIDN</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-dsn-body">
+                  <tr>
+                    <td colspan="6">Memuat...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ======= PAGE: MATA KULIAH ======= -->
+          <section id="page-matkul" class="page">
+            <div class="page-toolbar">
+              <input
+                type="text"
+                placeholder="🔍 Cari mata kuliah..."
+                oninput="filterTable('tbl-matkul', this.value)"
+              />
+              <button
+                class="btn btn-primary"
+                onclick="openModal('modal-mk', clearFormMk)"
+              >
+                + Tambah Mata Kuliah
+              </button>
+            </div>
+            <div class="table-card">
+              <table id="tbl-matkul">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Kode</th>
+                    <th>Nama Mata Kuliah</th>
+                    <th>SKS</th>
+                    <th>Semester</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-mk-body">
+                  <tr>
+                    <td colspan="6">Memuat...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+        <!-- /content-area -->
+      </div>
+      <!-- /main-content -->
+    </div>
+    <!-- /main-app -->
+
+    <!-- ============================================================
+     MODAL: Tambah/Edit Mahasiswa
+============================================================ -->
+    <div id="modal-mhs" class="modal-overlay" style="display: none">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 id="modal-mhs-title">Tambah Mahasiswa</h3>
+          <button onclick="closeModal('modal-mhs')">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="mhs-id" />
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>NIM *</label>
+              <input type="text" id="mhs-nim" />
+            </div>
+
+            <div class="form-group">
+              <label>Nama *</label>
+              <input type="text" id="mhs-nama" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Jurusan</label>
+              <select id="mhs-jur">
+                <option value="">Pilih Jurusan</option>
+                <option>Matematika</option>
+                <option>Fisika</option>
+                <option>Kimia</option>
+                <option>Biologi</option>
+                <option>Ilmu Komputer</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Program Studi</label>
+              <select id="mhs-program_studi">
+                <option value="">Pilih Prodi</option>
+                <option>Sistem Informasi</option>
+                <option>Teknik Komputer</option>
+                <option>Statistika</option>
+                <option>Manajemen Informatika</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="mhs-email" />
+            </div>
+
+            <div class="form-group">
+              <label>Agama</label>
+              <select id="mhs-agama">
+                <option>Islam</option>
+                <option>Kristen</option>
+                <option>Katholik</option>
+                <option>Hindu</option>
+                <option>Budha</option>
+                <option>Khonghucu</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Status</label>
+              <select id="mhs-status">
+                <option>Aktif</option>
+                <option>Semhas</option>
+                <option>Kompre</option>
+                <option>Alumni</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Jenis Kelamin</label>
+              <select id="mhs-jk">
+                <option>Laki-laki</option>
+                <option>Perempuan</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tempat Lahir</label>
+              <input type="text" id="mhs-tmp_lahir" />
+            </div>
+
+            <div class="form-group">
+              <label>Tanggal Lahir</label>
+              <input type="date" id="mhs-tgl-lahir" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Alamat</label>
+            <textarea id="mhs-alamat"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('modal-mhs')">
+            Batal
+          </button>
+
+          <button class="btn btn-primary" onclick="saveMahasiswa()">
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Tambah/Edit Dosen -->
+    <div id="modal-dsn" class="modal-overlay" style="display: none">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 id="modal-dsn-title">Tambah Dosen</h3>
+          <button onclick="closeModal('modal-dsn')">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="dsn-id" />
+          <div class="form-row">
+            <div class="form-group">
+              <label>NIDN *</label>
+              <input
+                type="text"
+                id="dsn-nidn"
+                placeholder="Contoh: 0031126318"
+              />
+            </div>
+            <div class="form-group">
+              <label>Nama Lengkap *</label>
+              <input
+                type="text"
+                id="dsn-nama"
+                placeholder="Nama dosen + gelar"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                id="dsn-email"
+                placeholder="email@dosen.ac.id"
+              />
+            </div>
+            <div class="form-group">
+              <label>No. HP</label>
+              <input type="text" id="dsn-hp" placeholder="081234567890" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="dsn-status">
+              <option value="Aktif">Aktif</option>
+              <option value="Tidak Aktif">Tidak Aktif</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('modal-dsn')">
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="saveDosen()">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Tambah/Edit Mata Kuliah -->
+    <div id="modal-mk" class="modal-overlay" style="display: none">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 id="modal-mk-title">Tambah Mata Kuliah</h3>
+          <button onclick="closeModal('modal-mk')">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="mk-id" />
+          <div class="form-row">
+            <div class="form-group">
+              <label>Kode MK *</label>
+              <input type="text" id="mk-kode" placeholder="Contoh: MSI3105" />
+            </div>
+            <div class="form-group">
+              <label>Nama Mata Kuliah *</label>
+              <input type="text" id="mk-nama" placeholder="Nama mata kuliah" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>SKS</label>
+              <input type="number" id="mk-sks" value="3" min="1" max="6" />
+            </div>
+            <div class="form-group">
+              <label>Semester</label>
+              <input type="number" id="mk-semester" value="1" min="1" max="8" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('modal-mk')">
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="saveMatKul()">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notifikasi -->
+    <!-- MODAL: Tukar Password -->
+    <div id="modal-password" class="modal-overlay" style="display: none">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>Tukar Password</h3>
+          <button onclick="closeModal('modal-password')">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Password Lama</label>
+            <input type="password" id="old-password" />
+          </div>
+
+          <div class="form-group">
+            <label>Password Baru</label>
+            <input type="password" id="new-password" />
+          </div>
+
+          <div class="form-group">
+            <label>Konfirmasi Password</label>
+            <input type="password" id="confirm-password" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('modal-password')"
+          >
+            Batal
+          </button>
+
+          <button class="btn btn-primary" onclick="changePassword()">
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="toast" class="toast" style="display: none"></div>
+
+    <footer class="footer">© 2026 SIAKAD - Sistem Informasi Akademik</footer>
+
+    <script src="assets/app.js"></script>
+  </body>
+</html>
