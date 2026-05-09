@@ -209,7 +209,7 @@ function clearFormMhs() {
   document.getElementById("mhs-agama").value = "Islam";
   document.getElementById("mhs-status").value = "Aktif";
   document.getElementById("mhs-jk").value = "Laki-laki";
-  document.getElementById("mhs-tmp-lahir").value = "";
+  document.getElementById("mhs-tmp_lahir").value = "";
   document.getElementById("mhs-tgl-lahir").value = "";
   document.getElementById("mhs-alamat").value = "";
   document.getElementById("modal-mhs-title").textContent = "Tambah Mahasiswa";
@@ -227,7 +227,7 @@ async function editMahasiswa(id) {
   document.getElementById("mhs-agama").value = m.agama || "Islam";
   document.getElementById("mhs-status").value = m.status || "Aktif";
   document.getElementById("mhs-jk").value = m.jk || "Laki-laki";
-  document.getElementById("mhs-tmp-lahir").value = m.tmp_lahir || "";
+  document.getElementById("mhs-tmp_lahir").value = m.tmp_lahir || "";
   document.getElementById("mhs-tgl-lahir").value = m.tgl_lahir || "";
   document.getElementById("mhs-alamat").value = m.alamat || "";
   document.getElementById("modal-mhs-title").textContent = "Edit Mahasiswa";
