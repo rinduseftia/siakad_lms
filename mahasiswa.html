@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIAKAD — Data Mahasiswa</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --navy-deep: #0a1628;
+        --navy-mid: #112240;
+        --navy-light: #1a3a6b;
+        --navy-accent: #1e4d8c;
+        --gold: #c8a96e;
+        --gold-light: #e8c98a;
+        --white: #ffffff;
+        --white-90: rgba(255, 255, 255, 0.9);
+        --white-70: rgba(255, 255, 255, 0.7);
+        --white-40: rgba(255, 255, 255, 0.4);
+        --white-15: rgba(255, 255, 255, 0.15);
+        --white-08: rgba(255, 255, 255, 0.08);
+        --glass-bg: rgba(255, 255, 255, 0.09);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: "DM Sans", sans-serif;
+        background: var(--navy-deep);
+        color: var(--white);
+        overflow: hidden;
+        display: flex;
+      }
+
+      /* ── Background Canvas ── */
+      .bg-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 20% 30%,
+            rgba(30, 77, 140, 0.55) 0%,
+            transparent 65%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 80% 75%,
+            rgba(17, 34, 64, 0.8) 0%,
+            transparent 60%
+          ),
+          linear-gradient(150deg, #0a1628 0%, #112240 50%, #0d1e38 100%);
+      }
+      .bg-grid {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+      }
+
+      /* ── Sidebar (Tetap Konsisten 280px) ── */
+      .sidebar {
+        width: 280px;
+        background: var(--glass-bg);
+        border-right: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(28px) saturate(160%);
+        -webkit-backdrop-filter: blur(28px) saturate(160%);
+        padding: 40px 24px;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        z-index: 10;
+      }
+      .brand {
+        font-family: "Playfair Display", serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--white-15);
+        text-align: center;
+      }
+      .brand span {
+        color: var(--gold);
+      }
+      .menu-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--white-40);
+        margin-bottom: 12px;
+        padding-left: 12px;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 14px 16px;
+        color: var(--white-70);
+        text-decoration: none;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        background: rgba(200, 169, 110, 0.15);
+        color: var(--gold-light);
+        box-shadow: inset 3px 0 0 var(--gold);
+      }
+      .logout-btn {
+        margin-top: auto;
+        background: rgba(229, 57, 53, 0.11);
+        color: #ff8a80;
+        border: 1px solid rgba(229, 57, 53, 0.25);
+      }
+      .logout-btn:hover {
+        background: rgba(229, 57, 53, 0.25);
+        color: white;
+      }
+
+      /* ── Main Content Layout ── */
+      .main-content {
+        margin-left: 280px;
+        flex: 1;
+        padding: 40px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-shrink: 0;
+      }
+      .header-title h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 32px;
+        font-weight: 600;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-family: "DM Sans";
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+      }
+      .btn-add {
+        background: var(--gold);
+        color: var(--navy-deep);
+        box-shadow: 0 4px 15px rgba(200, 169, 110, 0.25);
+      }
+      .btn-add:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(200, 169, 110, 0.4);
+      }
+      .btn-delete-bulk {
+        background: rgba(229, 57, 53, 0.2);
+        color: #ff8a80;
+        border: 1px solid rgba(229, 57, 53, 0.3);
+        margin-right: 10px;
+      }
+
+      .btn-sm {
+        padding: 5px 12px;
+        font-size: 11.5px;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+      }
+      .btn-edit {
+        background: rgba(255, 255, 255, 0.12);
+        color: white;
+        border: 1px solid var(--white-15);
+        margin-right: 4px;
+      }
+      .btn-edit:hover {
+        background: rgba(255, 255, 255, 0.22);
+        color: var(--gold-light);
+      }
+      .btn-del {
+        background: rgba(229, 57, 53, 0.12);
+        color: #ff8a80;
+        border: 1px solid rgba(229, 57, 53, 0.25);
+      }
+      .btn-del:hover {
+        background: rgba(229, 57, 53, 0.25);
+        color: white;
+      }
+
+      /* ── Table Wrapper Layout ── */
+      .table-wrapper {
+        background: var(--glass-bg);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(10, 22, 40, 0.2);
+        flex: 1;
+        overflow-x: auto;
+        overflow-y: auto;
+        margin-bottom: 10px;
+      }
+
+      /* Scrollbar styling */
+      .table-wrapper::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .table-wrapper::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .table-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(200, 169, 110, 0.2);
+        border-radius: 10px;
+      }
+      .table-wrapper::-webkit-scrollbar-thumb:hover {
+        background: var(--gold);
+      }
+
+      /* ── Desain Pengaturan Kolom Tabel ── */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        table-layout: fixed;
+        min-width: 1360px;
+      }
+
+      thead th {
+        position: sticky;
+        top: 0;
+        background: #0e1c30;
+        padding: 14px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--gold-light);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        z-index: 5;
+      }
+
+      tbody td {
+        padding: 12px 10px;
+        font-size: 12.5px;
+        color: var(--white-90);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      tbody tr {
+        transition: background 0.2s;
+      }
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      /* Pengaturan Lebar Kolom yang Presisi dan Adil */
+      .col-check { width: 40px; text-align: center; }
+      .col-no { width: 45px; text-align: center; }
+      .col-nim { width: 100px; }
+      .col-nama { width: 150px; }
+      .col-jurusan { width: 100px; }
+      .col-prodi { width: 120px; }
+      .col-email { width: 150px; }
+      .col-agama { width: 85px; }
+      .col-status { width: 85px; text-align: center; }
+      .col-gender { width: 90px; }
+      .col-tempat { width: 100px; }
+      .col-tanggal { width: 105px; }
+      .col-alamat { width: 140px; }
+      .col-aksi { width: 130px; text-align: center; }
+
+      /* Badges & Checkbox */
+      .status-badge {
+        padding: 3px 8px;
+        border-radius: 100px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .status-aktif {
+        background: rgba(76, 175, 80, 0.15);
+        color: #81c784;
+        border: 1px solid rgba(76, 175, 80, 0.25);
+      }
+      .status-nonaktif {
+        background: rgba(255, 152, 0, 0.15);
+        color: #ffb74d;
+        border: 1px solid rgba(255, 152, 0, 0.25);
+      }
+
+      .check-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .check-container input { display: none; }
+      .check-box {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 1px solid var(--white-40);
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .check-container input:checked + .check-box {
+        background: var(--gold);
+        border-color: var(--gold);
+      }
+      .check-container input:checked + .check-box::after {
+        content: "";
+        width: 4px;
+        height: 7px;
+        border: 2px solid #0a1628;
+        border-top: none;
+        border-left: none;
+        transform: rotate(45deg) translate(-0.5px, -0.5px);
+      }
+
+      /* Modal Area */
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 22, 40, 0.8);
+        z-index: 100;
+        backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-content {
+        background: #0f1d33;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 25px;
+        border-radius: 12px;
+        width: 640px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .modal-header h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 22px;
+        color: var(--gold-light);
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white-40);
+        font-size: 26px;
+        cursor: pointer;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .form-group.full-width {
+        grid-column: span 2;
+      }
+      .form-group label {
+        font-size: 11px;
+        margin-bottom: 5px;
+        color: var(--white-70);
+        text-transform: uppercase;
+      }
+      .form-control {
+        padding: 9px 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--white-15);
+        border-radius: 6px;
+        color: white;
+        font-family: "DM Sans";
+        font-size: 13.5px;
+      }
+      .form-control:focus {
+        outline: none;
+        border-color: var(--gold);
+      }
+      select.form-control option {
+        background: #0f1d33;
+      }
+    </style>
+
+    <script>
+      // 1. KODE ANTI-GLITCH DIMASUKKAN DI SINI (SEBELUM BODY)
+      const role = (localStorage.getItem("role") || "mahasiswa").toLowerCase();
+      const styleBlock = document.createElement("style");
+
+      // PERBAIKAN: '#btnTambahMK' diubah menjadi '#btnTambah' agar sinkron dengan ID HTML
+      if (role === "mahasiswa") {
+        styleBlock.innerHTML =
+          "#menu-mhs, #menu-dsn, #btnTambah, #thCheck, #thAksi, .activity-card { display: none !important; }";
+      } else if (role === "dosen") {
+        styleBlock.innerHTML =
+          "#menu-dsn, #btnTambah, #thCheck, #thAksi, .activity-card { display: none !important; }";
+      }
+
+      document.head.appendChild(styleBlock);
+    </script>
+  </head>
+  <body>
+    <div class="bg-canvas"></div>
+    <div class="bg-grid"></div>
+
+    <div class="sidebar">
+      <div class="brand">SIAKAD <span>UNRI</span></div>
+
+      <div class="menu-label">Menu Utama</div>
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+
+      <a href="mahasiswa.html" id="menu-mhs" class="nav-link active">Mahasiswa</a>
+      <a href="dosen.html" id="menu-dsn" class="nav-link">Dosen</a>
+
+      <a href="matakuliah.html" class="nav-link">Mata Kuliah</a>
+
+      <div class="menu-label" style="margin-top: 24px">Pengaturan</div>
+      <a
+        href="#"
+        onclick="alert('Halaman Change Password belum dibuat')"
+        class="nav-link"
+        >Change Password</a
+      >
+      <a href="#" onclick="logout(event)" class="nav-link logout-btn">Logout</a>
+    </div>
+
+    <div class="main-content">
+      <div class="header-top">
+        <div class="header-title">
+          <h1>Data Mahasiswa</h1>
+        </div>
+        <div>
+          <button
+            class="btn btn-delete-bulk"
+            id="btnBulkDelete"
+            onclick="deleteSelected()"
+            style="display: none"
+          >
+            Hapus Terpilih
+          </button>
+          <button class="btn btn-add" id="btnTambah" onclick="openModal(false)">
+            + Tambah Mahasiswa
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-check" id="thCheck">
+                <label class="check-container">
+                  <input
+                    type="checkbox"
+                    id="checkAll"
+                    onchange="toggleAll(this)"
+                  />
+                  <div class="check-box"></div>
+                </label>
+              </th>
+              <th class="col-no">No</th>
+              <th class="col-nim">NIM</th>
+              <th class="col-nama">Nama Lengkap</th>
+              <th class="col-jurusan">Jurusan</th>
+              <th class="col-prodi">Program Studi</th>
+              <th class="col-email">Email</th>
+              <th class="col-agama">Agama</th>
+              <th class="col-status">Status</th>
+              <th class="col-gender">Gender</th>
+              <th class="col-tempat">Tempat Lahir</th>
+              <th class="col-tanggal">Tanggal Lahir</th>
+              <th class="col-alamat">Alamat</th>
+              <th class="col-aksi" id="thAksi">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td
+                id="tdLoading"
+                colspan="14"
+                style="text-align: center; padding: 30px"
+              >
+                Memuat data mahasiswa...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="studentModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Tambah Mahasiswa</h2>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="studentForm" onsubmit="saveData(event)">
+          <input type="hidden" id="formAction" value="add" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label>NIM</label>
+              <input type="text" id="nim" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Nama Lengkap</label>
+              <input type="text" id="nama" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Jurusan</label>
+              <input type="text" id="jur" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Program Studi</label>
+              <input type="text" id="prodi" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="email" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Agama</label>
+              <select id="agama" class="form-control" required>
+                <option value="Islam">Islam</option>
+                <option value="Kristen">Kristen</option>
+                <option value="Katolik">Katolik</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Buddha">Buddha</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="status" class="form-control" required>
+                <option value="Aktif">Aktif</option>
+                <option value="Nonaktif">Nonaktif</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Jenis Kelamin</label>
+              <select id="jk" class="form-control" required>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tempat Lahir</label>
+              <input type="text" id="tmp_lahir" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Tanggal Lahir</label>
+              <input type="date" id="tgl_lahir" class="form-control" required />
+            </div>
+            <div class="form-group full-width">
+              <label>Alamat</label>
+              <input type="text" id="alamat" class="form-control" required />
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-add"
+            style="width: 100%; margin-top: 20px; padding: 12px"
+          >
+            Simpan Data
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let mahasiswaData = [];
+      const userRole = localStorage.getItem("role") || "mahasiswa";
+
+      async function loadData() {
+        const colsCount = userRole === "admin" ? 14 : 12;
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = `<tr><td colspan="${colsCount}" style="text-align: center; padding: 30px;">Memuat data mahasiswa...</td></tr>`;
+
+        try {
+          const response = await fetch("api/mahasiswa.php");
+          if (!response.ok) throw new Error("Gagal memuat API.");
+          mahasiswaData = await response.json();
+          renderTable();
+        } catch (error) {
+          mahasiswaData = [
+            {
+              nim: "2303111235",
+              nama: "Poltak Simanjuntak",
+              jur: "Informatika",
+              program_studi: "Sistem Informasi",
+              email: "poltak@student.ac.id",
+              agama: "Islam",
+              status: "Aktif",
+              jk: "Laki-laki",
+              tmp_lahir: "Medan",
+              tgl_lahir: "2003-01-15",
+              alamat: "Jl. Merdeka No. 1",
+            },
+            {
+              nim: "2303111236",
+              nama: "Fahri Eka",
+              jur: "Informatika",
+              program_studi: "Sistem Informasi",
+              email: "fahri@student.ac.id",
+              agama: "Islam",
+              status: "Aktif",
+              jk: "Laki-laki",
+              tmp_lahir: "Pekanbaru",
+              tgl_lahir: "2003-05-20",
+              alamat: "Jl. Sudirman No. 5",
+            },
+          ];
+          renderTable();
+        }
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+
+        if (mahasiswaData.length === 0) {
+            const colsCount = userRole === "admin" ? 14 : 12;
+            tbody.innerHTML = `<tr><td colspan="${colsCount}" style="text-align:center;">Tidak ada data ditemukan.</td></tr>`;
+            return;
+        }
+
+        mahasiswaData.forEach((mhs, index) => {
+          const statusClass =
+            mhs.status && mhs.status.toLowerCase() === "aktif"
+              ? "status-aktif"
+              : "status-nonaktif";
+          const tr = document.createElement("tr");
+
+          let checkColumnHtml = "";
+          let actionColumnHtml = "";
+          
+          if (userRole === "admin") {
+            checkColumnHtml = `
+                    <td class="col-check">
+                        <label class="check-container">
+                            <input type="checkbox" class="check-item" value="${mhs.nim}" onchange="checkSelection()">
+                            <div class="check-box"></div>
+                        </label>
+                    </td>`;
+            
+            actionColumnHtml = `
+                    <td class="col-aksi">
+                        <button class="btn btn-sm btn-edit" onclick="openModal(true, '${mhs.nim}')">Edit</button>
+                        <button class="btn btn-sm btn-del" onclick="deleteSingle('${mhs.nim}')">Hapus</button>
+                    </td>`;
+          }
+
+          tr.innerHTML = `
+                ${checkColumnHtml}
+                <td class="col-no" style="color: var(--white-40);">${index + 1}</td>
+                <td class="col-nim" style="font-family: monospace; font-weight:600; color:var(--gold-light);">${mhs.nim}</td>
+                <td class="col-nama" style="font-weight: 500;" title="${mhs.nama}">${mhs.nama}</td>
+                <td class="col-jurusan">${mhs.jur}</td>
+                <td class="col-prodi" title="${mhs.program_studi || mhs.prodi}">${mhs.program_studi || mhs.prodi}</td>
+                <td class="col-email" style="color: var(--white-70);" title="${mhs.email}">${mhs.email}</td>
+                <td class="col-agama">${mhs.agama}</td>
+                <td class="col-status"><span class="status-badge ${statusClass}">${mhs.status}</span></td>
+                <td class="col-gender">${mhs.jk}</td>
+                <td class="col-tempat">${mhs.tmp_lahir}</td>
+                <td class="col-tanggal">${mhs.tgl_lahir}</td>
+                <td class="col-alamat" title="${mhs.alamat}">${mhs.alamat}</td>
+                ${actionColumnHtml}
+            `;
+          tbody.appendChild(tr);
+        });
+
+        if (userRole === "admin") {
+            document.getElementById("checkAll").checked = false;
+            checkSelection();
+        }
+      }
+
+      function openModal(isEdit = false, nim = "") {
+        if (userRole !== "admin") return; // Keamanan
+        document.getElementById("studentModal").style.display = "flex";
+        if (isEdit) {
+          document.getElementById("modalTitle").innerText = "Edit Data Mahasiswa";
+          document.getElementById("formAction").value = "edit";
+          document.getElementById("nim").disabled = true;
+          const mhs = mahasiswaData.find((m) => m.nim === nim);
+          if (mhs) {
+            document.getElementById("nim").value = mhs.nim;
+            document.getElementById("nama").value = mhs.nama;
+            document.getElementById("jur").value = mhs.jur;
+            document.getElementById("prodi").value = mhs.program_studi || mhs.prodi;
+            document.getElementById("email").value = mhs.email;
+            document.getElementById("agama").value = mhs.agama;
+            document.getElementById("status").value = mhs.status;
+            document.getElementById("jk").value = mhs.jk;
+            document.getElementById("tmp_lahir").value = mhs.tmp_lahir;
+            document.getElementById("tgl_lahir").value = mhs.tgl_lahir;
+            document.getElementById("alamat").value = mhs.alamat;
+          }
+        } else {
+          document.getElementById("modalTitle").innerText = "Tambah Mahasiswa";
+          document.getElementById("formAction").value = "add";
+          document.getElementById("nim").disabled = false;
+          document.getElementById("studentForm").reset();
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("studentModal").style.display = "none";
+      }
+
+      async function saveData(event) {
+        event.preventDefault();
+        if (userRole !== "admin") return; // Keamanan
+
+        const action = document.getElementById("formAction").value;
+        const payload = {
+          nim: document.getElementById("nim").value,
+          nama: document.getElementById("nama").value,
+          jur: document.getElementById("jur").value,
+          prodi: document.getElementById("prodi").value,
+          email: document.getElementById("email").value,
+          agama: document.getElementById("agama").value,
+          status: document.getElementById("status").value,
+          jk: document.getElementById("jk").value,
+          tmp_lahir: document.getElementById("tmp_lahir").value,
+          tgl_lahir: document.getElementById("tgl_lahir").value,
+          alamat: document.getElementById("alamat").value,
+        };
+
+        try {
+          const response = await fetch("api/mahasiswa.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: action, ...payload }),
+          });
+          const result = await response.json();
+          if (result.success) {
+            alert(result.message || "Data berhasil disimpan");
+            closeModal();
+            loadData();
+          } else {
+            alert("Gagal menyimpan: " + result.message);
+          }
+        } catch (error) {
+          alert("Koneksi database/API error. Jika API belum aktif, fitur simpan belum berjalan di sisi server.");
+          closeModal();
+        }
+      }
+
+      async function deleteSingle(nim) {
+        if (userRole !== "admin") return; // Keamanan
+        if (!confirm(`Yakin ingin menghapus mahasiswa dengan NIM ${nim}?`)) return;
+
+        try {
+          const response = await fetch(`api/mahasiswa.php?nim=${nim}`, {
+            method: "DELETE",
+          });
+          const result = await response.json();
+          if (result.success) {
+            alert(result.message || "Data berhasil dihapus");
+            loadData();
+          } else {
+            alert("Gagal: " + result.message);
+          }
+        } catch (error) {
+          alert("Koneksi gagal. Pastikan API backend berjalan.");
+        }
+      }
+
+      function toggleAll(source) {
+        if (userRole !== "admin") return; // Keamanan
+        document.querySelectorAll(".check-item").forEach((cb) => (cb.checked = source.checked));
+        checkSelection();
+      }
+
+      function checkSelection() {
+        if (userRole !== "admin") return;
+        const count = document.querySelectorAll(".check-item:checked").length;
+        document.getElementById("btnBulkDelete").style.display = count > 0 ? "inline-block" : "none";
+        document.getElementById("btnBulkDelete").innerText = `Hapus Terpilih (${count})`;
+      }
+
+      function deleteSelected() {
+        if (userRole !== "admin") return; // Keamanan
+        const checkedNims = Array.from(document.querySelectorAll(".check-item:checked")).map((cb) => cb.value);
+        
+        if (confirm(`Hapus ${checkedNims.length} data mahasiswa terpilih?`)) {
+          // Logika untuk mengirim ke API Mass Delete bisa ditambahkan di sini nantinya (seperti di file Dosen)
+          alert("Permintaan penghapusan massal NIM: " + checkedNims.join(", ") + " dikirim ke server.");
+          
+          // Setelah API selesai, panggil loadData()
+          // loadData();
+        }
+      }
+
+      function logout() {
+        localStorage.clear();
+        window.location.href = "index.html";
+      }
+
+      // Mulai jalankan aplikasi saat layar dimuat
+      document.addEventListener("DOMContentLoaded", () => {
+        loadData();
+      });
+    </script>
+  </body>
+</html>

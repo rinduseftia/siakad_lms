@@ -1,622 +1,579 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SIAKAD - Sistem Informasi Akademik</title>
-    <link rel="stylesheet" href="assets/style.css" />
-  </head>
-  <body>
-    <!-- ============================================================
-     HALAMAN LOGIN
-============================================================ -->
-    <div id="login-page" class="login-wrapper">
-      <div class="login-card">
-        <div class="login-logo">
-          <div class="logo-icon">🎓</div>
-          <h1>SIAKAD</h1>
-          <p>Sistem Informasi Akademik</p>
-        </div>
-        <div
-          id="login-error"
-          class="alert alert-danger"
-          style="display: none"
-        ></div>
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" id="username" placeholder="Masukkan username" />
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Masukkan password"
-          />
-        </div>
-        <button class="btn btn-primary btn-block" onclick="doLogin()">
-          Login
-        </button>
-        <p class="login-hint">Default: admin / admin123</p>
-      </div>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIAKAD — Login Mahasiswa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=600;700&family=DM+Sans:wght=300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --navy-deep:    #0a1628;
+          --navy-mid:     #112240;
+          --navy-light:   #1a3a6b;
+          --navy-accent:  #1e4d8c;
+          --gold:         #c8a96e;
+          --gold-light:   #e8c98a;
+          --white:        #ffffff;
+          --white-90:     rgba(255,255,255,0.90);
+          --white-70:     rgba(255,255,255,0.70);
+          --white-40:     rgba(255,255,255,0.40);
+          --white-15:     rgba(255,255,255,0.15);
+          --white-08:     rgba(255,255,255,0.08);
+          --glass-bg:     rgba(255,255,255,0.10);
+          --glass-border: rgba(255,255,255,0.20);
+          --glass-shadow: rgba(10,22,40,0.50);
+        }
 
-    <!-- ============================================================
-     HALAMAN DASHBOARD (setelah login)
-============================================================ -->
-    <div id="main-app" class="app" style="display: none">
-      <!-- SIDEBAR -->
-      <nav class="sidebar">
-        <div class="sidebar-brand">
-          <span class="brand-icon">🎓</span>
-          <div>
-            <div class="brand-title">SIAKAD</div>
-            <div class="brand-sub">Sistem Informasi Akademik</div>
-          </div>
-        </div>
-        <div class="nav-section">Menu Utama</div>
-        <a
-          href="#"
-          class="nav-item active"
-          onclick="showPage('dashboard', this)"
-        >
-          <span class="nav-icon">📊</span> Dashboard
-        </a>
-        <a href="#" class="nav-item" onclick="showPage('mahasiswa', this)">
-          <span class="nav-icon">👨‍🎓</span> Data Mahasiswa
-        </a>
-        <a href="#" class="nav-item" onclick="showPage('dosen', this)">
-          <span class="nav-icon">👨‍🏫</span> Data Dosen
-        </a>
-        <a href="#" class="nav-item" onclick="showPage('matkul', this)">
-          <span class="nav-icon">📚</span> Mata Kuliah
-        </a>
-        <div class="sidebar-bottom">
-          <a href="#" class="nav-item" onclick="openModal('modal-password')">
-            <span class="nav-icon">🔑</span>
-            Tukar Password
-          </a>
-          <a href="#" class="nav-item nav-logout" onclick="doLogout()">
-            <span class="nav-icon">🚪</span> Logout
-          </a>
-        </div>
-      </nav>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      <!-- MAIN CONTENT -->
-      <div class="main-content">
-        <header class="topbar">
-          <div class="header-left">
-            <div class="logo-box">🎓</div>
-            <div>
-              <h2 class="header-title" id="page-heading">SIAKAD</h2>
-              <p class="header-subtitle">Sistem Informasi Akademik</p>
+        body {
+          min-height: 100vh;
+          font-family: 'DM Sans', sans-serif;
+          background: var(--navy-deep);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          position: relative;
+        }
+
+        /* ── Animated background ── */
+        .bg-canvas {
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          background:
+            radial-gradient(ellipse 80% 60% at 20% 30%, rgba(30,77,140,0.55) 0%, transparent 65%),
+            radial-gradient(ellipse 60% 50% at 80% 75%, rgba(17,34,64,0.80) 0%, transparent 60%),
+            linear-gradient(150deg, #0a1628 0%, #112240 50%, #0d1e38 100%);
+        }
+
+        /* floating orbs */
+        .orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(80px);
+          animation: floatOrb 12s ease-in-out infinite;
+          pointer-events: none;
+        }
+        .orb-1 {
+          width: 420px; height: 420px;
+          background: radial-gradient(circle, rgba(30,77,140,0.45), transparent 70%);
+          top: -100px; left: -100px;
+          animation-duration: 14s;
+        }
+        .orb-2 {
+          width: 350px; height: 350px;
+          background: radial-gradient(circle, rgba(200,169,110,0.18), transparent 70%);
+          bottom: -80px; right: -80px;
+          animation-duration: 10s; animation-delay: -4s;
+        }
+        .orb-3 {
+          width: 250px; height: 250px;
+          background: radial-gradient(circle, rgba(26,58,107,0.40), transparent 70%);
+          top: 50%; right: 15%;
+          animation-duration: 16s; animation-delay: -7s;
+        }
+        @keyframes floatOrb {
+          0%,100% { transform: translate(0,0) scale(1); }
+          33%      { transform: translate(30px,-20px) scale(1.05); }
+          66%      { transform: translate(-20px,15px) scale(0.97); }
+        }
+
+        /* grid overlay */
+        .bg-grid {
+          position: fixed;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+          background-size: 60px 60px;
+          z-index: 1;
+        }
+
+        /* ── Layout ── */
+        .page-wrapper {
+          position: relative;
+          z-index: 10;
+          width: 100%;
+          max-width: 1100px;
+          min-height: 100vh;
+          display: grid;
+          grid-template-columns: 1fr 480px;
+          align-items: center;
+          gap: 0;
+          padding: 40px 32px;
+        }
+
+        /* ── Left hero panel ── */
+        .hero {
+          padding: 40px 60px 40px 40px;
+          animation: slideInLeft 0.9s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        @keyframes slideInLeft {
+          from { opacity:0; transform: translateX(-40px); }
+          to   { opacity:1; transform: translateX(0); }
+        }
+
+        .hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: var(--white-08);
+          border: 1px solid var(--white-15);
+          border-radius: 100px;
+          padding: 6px 16px;
+          margin-bottom: 36px;
+          backdrop-filter: blur(8px);
+        }
+        .hero-badge-dot {
+          width: 7px; height: 7px;
+          border-radius: 50%;
+          background: var(--gold);
+          box-shadow: 0 0 8px var(--gold);
+          animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+          0%,100% { box-shadow: 0 0 6px var(--gold); }
+          50%      { box-shadow: 0 0 14px var(--gold-light); }
+        }
+        .hero-badge span {
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--gold-light);
+        }
+
+        .hero-uni {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(2rem, 3.5vw, 2.9rem);
+          font-weight: 700;
+          color: var(--white);
+          line-height: 1.2;
+          margin-bottom: 10px;
+          letter-spacing: -0.01em;
+        }
+        .hero-uni em {
+          font-style: normal;
+          color: var(--gold);
+        }
+
+        .hero-system {
+          font-size: 13px;
+          font-weight: 400;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--white-70);
+          margin-bottom: 32px;
+        }
+
+        .hero-divider {
+          width: 48px; height: 2px;
+          background: linear-gradient(90deg, var(--gold), transparent);
+          margin-bottom: 28px;
+          border-radius: 2px;
+        }
+
+        .hero-desc {
+          font-size: 15px;
+          line-height: 1.75;
+          color: var(--white-70);
+          max-width: 380px;
+          margin-bottom: 44px;
+        }
+
+        .hero-stats {
+          display: flex;
+          gap: 36px;
+        }
+        .stat {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .stat-num {
+          font-family: 'Playfair Display', serif;
+          font-size: 28px;
+          font-weight: 700;
+          color: var(--white);
+          line-height: 1;
+        }
+        .stat-num span { color: var(--gold); }
+        .stat-label {
+          font-size: 11px;
+          font-weight: 400;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--white-40);
+        }
+
+        /* ── Glass card ── */
+        .card {
+          background: rgba(255,255,255,0.09);
+          border: 1px solid rgba(255,255,255,0.18);
+          border-radius: 28px;
+          padding: 52px 44px;
+          backdrop-filter: blur(28px) saturate(160%);
+          -webkit-backdrop-filter: blur(28px) saturate(160%);
+          box-shadow:
+            0 8px 60px rgba(10,22,40,0.55),
+            0 1px 0 rgba(255,255,255,0.12) inset,
+            0 -1px 0 rgba(0,0,0,0.2) inset;
+          animation: slideInRight 0.9s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+        }
+        @keyframes slideInRight {
+          from { opacity:0; transform: translateX(40px); }
+          to   { opacity:1; transform: translateX(0); }
+        }
+
+        .card-header { margin-bottom: 36px; }
+
+        .card-logo {
+          width: 52px; height: 52px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, var(--navy-light), var(--navy-accent));
+          border: 1px solid rgba(255,255,255,0.15);
+          display: flex; align-items: center; justify-content: center;
+          margin-bottom: 20px;
+          box-shadow: 0 4px 20px rgba(10,22,40,0.5);
+        }
+        .card-logo svg { width: 26px; height: 26px; }
+
+        .card-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 24px;
+          font-weight: 600;
+          color: var(--white);
+          margin-bottom: 6px;
+        }
+        .card-subtitle {
+          font-size: 13.5px;
+          color: var(--white-70);
+          font-weight: 300;
+        }
+
+        /* ── Form ── */
+        .form-group { margin-bottom: 22px; }
+
+        .form-label {
+          display: block;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--white-70);
+          margin-bottom: 9px;
+        }
+
+        .input-wrap { position: relative; }
+        .input-icon {
+          position: absolute;
+          left: 16px; top: 50%; transform: translateY(-50%);
+          color: var(--white-40);
+          pointer-events: none;
+          transition: color 0.2s;
+        }
+        .input-wrap:focus-within .input-icon { color: var(--gold); }
+
+        .form-input {
+          width: 100%;
+          background: rgba(255,255,255,0.07);
+          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 12px;
+          padding: 14px 16px 14px 46px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14.5px;
+          color: var(--white);
+          outline: none;
+          transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+        }
+        .form-input::placeholder { color: rgba(255,255,255,0.30); }
+        .form-input:focus {
+          border-color: var(--gold);
+          background: rgba(255,255,255,0.11);
+          box-shadow: 0 0 0 3px rgba(200,169,110,0.15);
+        }
+
+        .form-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 28px;
+          margin-top: -6px;
+        }
+        .form-check {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+        }
+        .form-check input[type="checkbox"] { display: none; }
+        .check-box {
+          width: 17px; height: 17px;
+          border-radius: 5px;
+          border: 1px solid rgba(255,255,255,0.25);
+          background: rgba(255,255,255,0.07);
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.2s;
+          flex-shrink: 0;
+        }
+        .form-check input:checked + .check-box {
+          background: var(--gold);
+          border-color: var(--gold);
+        }
+        .form-check input:checked + .check-box::after {
+          content: '';
+          width: 5px; height: 9px;
+          border: 2px solid #0a1628;
+          border-top: none; border-left: none;
+          transform: rotate(45deg) translate(-1px,-1px);
+          display: block;
+        }
+        .check-label {
+          font-size: 13px;
+          color: var(--white-70);
+          user-select: none;
+        }
+
+        .forgot-link {
+          font-size: 13px;
+          color: var(--gold-light);
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.2s;
+        }
+        .forgot-link:hover { color: var(--white); }
+
+        .btn-login {
+          width: 100%;
+          padding: 15px;
+          border: none;
+          border-radius: 12px;
+          background: linear-gradient(135deg, var(--gold) 0%, #a87e45 100%);
+          color: var(--navy-deep);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+          transition: transform 0.2s, box-shadow 0.2s;
+          box-shadow: 0 4px 24px rgba(200,169,110,0.35);
+        }
+        .btn-login::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.20), transparent);
+          opacity: 0;
+          transition: opacity 0.2s;
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,169,110,0.45); }
+        .btn-login:hover::before { opacity: 1; }
+        .btn-login:active { transform: translateY(0); }
+
+        .btn-text { position: relative; z-index: 1; }
+        .btn-arrow { position: relative; z-index: 1; margin-left: 8px; display: inline-block; transition: transform 0.2s; }
+        .btn-login:hover .btn-arrow { transform: translateX(4px); }
+
+        .card-footer {
+          margin-top: 28px;
+          padding-top: 24px;
+          border-top: 1px solid rgba(255,255,255,0.10);
+          text-align: center;
+        }
+        .footer-text {
+          font-size: 12px;
+          color: var(--white-40);
+        }
+        .footer-text a {
+          color: var(--white-70);
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.2s;
+        }
+        .footer-text a:hover { color: var(--gold-light); }
+
+        /* ── Mobile ── */
+        @media (max-width: 820px) {
+          .page-wrapper {
+            grid-template-columns: 1fr;
+            max-width: 480px;
+            padding: 32px 20px;
+            gap: 32px;
+          }
+          .hero { padding: 0; text-align: center; }
+          .hero-badge { margin-left: auto; margin-right: auto; }
+          .hero-divider { margin-left: auto; margin-right: auto; }
+          .hero-stats { justify-content: center; }
+          .hero-desc { margin-left: auto; margin-right: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-canvas"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    
+    <div class="page-wrapper">
+        <div class="hero">
+            <div class="hero-badge">
+                <div class="hero-badge-dot"></div>
+                <span>Sistem Aktif</span>
             </div>
-          </div>
-          <div class="topbar-user">
-            <span id="admin-name">Administrator</span>
-            <div class="avatar">AD</div>
-          </div>
-        </header>
-
-        <div class="content-area">
-          <!-- ======= PAGE: DASHBOARD ======= -->
-          <section id="page-dashboard" class="page active">
-            <p class="welcome-text">
-              Selamat datang, <strong id="welcome-name">Administrator</strong>
+            <h1 class="hero-uni">UNIVERSITAS<br><em>RIAU</em></h1>
+            <p class="hero-system">Sistem Informasi Akademik Terpadu</p>
+            <div class="hero-divider"></div>
+            <p class="hero-desc">
+                Portal akademik terintegrasi untuk mahasiswa, dosen, dan civitas akademika.
+                Akses jadwal, nilai, KRS, dan layanan kampus dalam satu platform.
             </p>
-
-            <div class="stat-grid">
-              <div
-                class="stat-card blue"
-                onclick="
-                  showPage(
-                    'mahasiswa',
-                    document.querySelectorAll('.nav-item')[1],
-                  )
-                "
-              >
-                <div class="stat-body">
-                  <div class="stat-num" id="stat-mhs">–</div>
-                  <div class="stat-lbl">Total Mahasiswa</div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-num">12<span>K+</span></div>
+                    <div class="stat-label">Mahasiswa</div>
                 </div>
-                <div class="stat-icon">👨‍🎓</div>
-              </div>
-              <div
-                class="stat-card green"
-                onclick="
-                  showPage('dosen', document.querySelectorAll('.nav-item')[2])
-                "
-              >
-                <div class="stat-body">
-                  <div class="stat-num" id="stat-dsn">–</div>
-                  <div class="stat-lbl">Total Dosen</div>
+                <div class="stat">
+                    <div class="stat-num">840<span>+</span></div>
+                    <div class="stat-label">Mata Kuliah</div>
                 </div>
-                <div class="stat-icon">👨‍🏫</div>
-              </div>
-              <div
-                class="stat-card orange"
-                onclick="
-                  showPage('matkul', document.querySelectorAll('.nav-item')[3])
-                "
-              >
-                <div class="stat-body">
-                  <div class="stat-num" id="stat-mk">–</div>
-                  <div class="stat-lbl">Total Mata Kuliah</div>
+                <div class="stat">
+                    <div class="stat-num">98<span>%</span></div>
+                    <div class="stat-label">Uptime</div>
                 </div>
-                <div class="stat-icon">📚</div>
-              </div>
             </div>
-
-            <div class="tables-row">
-              <div class="table-widget">
-                <div class="widget-header blue">Mahasiswa Terbaru</div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>NIM</th>
-                      <th>Nama</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tbl-mhs-terbaru">
-                    <tr>
-                      <td colspan="2">Memuat...</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="widget-footer">
-                  <a
-                    href="#"
-                    onclick="
-                      showPage(
-                        'mahasiswa',
-                        document.querySelectorAll('.nav-item')[1],
-                      )
-                    "
-                    >Lihat Semua →</a
-                  >
-                </div>
-              </div>
-              <div class="table-widget">
-                <div class="widget-header green">Dosen Terbaru</div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>NIDN</th>
-                      <th>Nama</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tbl-dsn-terbaru">
-                    <tr>
-                      <td colspan="2">Memuat...</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="widget-footer">
-                  <a
-                    href="#"
-                    onclick="
-                      showPage(
-                        'dosen',
-                        document.querySelectorAll('.nav-item')[2],
-                      )
-                    "
-                    >Lihat Semua →</a
-                  >
-                </div>
-              </div>
-              <div class="table-widget">
-                <div class="widget-header orange">Mata Kuliah Terbaru</div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Kode</th>
-                      <th>Nama</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tbl-mk-terbaru">
-                    <tr>
-                      <td colspan="2">Memuat...</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="widget-footer">
-                  <a
-                    href="#"
-                    onclick="
-                      showPage(
-                        'matkul',
-                        document.querySelectorAll('.nav-item')[3],
-                      )
-                    "
-                    >Lihat Semua →</a
-                  >
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ======= PAGE: MAHASISWA ======= -->
-          <section id="page-mahasiswa" class="page">
-            <div class="page-toolbar">
-              <input
-                type="text"
-                id="search-mhs"
-                placeholder="🔍 Cari mahasiswa..."
-                oninput="filterTable('tbl-mahasiswa', this.value)"
-              />
-              <button
-                class="btn btn-primary"
-                onclick="openModal('modal-mhs', clearFormMhs)"
-              >
-                + Tambah Mahasiswa
-              </button>
-            </div>
-            <div class="table-card">
-              <table id="tbl-mahasiswa">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>NIM</th>
-                    <th>Nama</th>
-                    <th>Jurusan</th>
-                    <th>Program Studi</th>
-                    <th>Email</th>
-                    <th>Agama</th>
-                    <th>Status</th>
-                    <th>Jenis Kelamin</th>
-                    <th>Tempat Lahir</th>
-                    <th>Tanggal Lahir</th>
-                    <th>Alamat</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="tbl-mhs-body">
-                  <tr>
-                    <td colspan="7">Memuat...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <!-- ======= PAGE: DOSEN ======= -->
-          <section id="page-dosen" class="page">
-            <div class="page-toolbar">
-              <input
-                type="text"
-                placeholder="🔍 Cari dosen..."
-                oninput="filterTable('tbl-dosen', this.value)"
-              />
-              <button
-                class="btn btn-primary"
-                onclick="openModal('modal-dsn', clearFormDsn)"
-              >
-                + Tambah Dosen
-              </button>
-            </div>
-            <div class="table-card">
-              <table id="tbl-dosen">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>NIDN</th>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="tbl-dsn-body">
-                  <tr>
-                    <td colspan="6">Memuat...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <!-- ======= PAGE: MATA KULIAH ======= -->
-          <section id="page-matkul" class="page">
-            <div class="page-toolbar">
-              <input
-                type="text"
-                placeholder="🔍 Cari mata kuliah..."
-                oninput="filterTable('tbl-matkul', this.value)"
-              />
-              <button
-                class="btn btn-primary"
-                onclick="openModal('modal-mk', clearFormMk)"
-              >
-                + Tambah Mata Kuliah
-              </button>
-            </div>
-            <div class="table-card">
-              <table id="tbl-matkul">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Kode</th>
-                    <th>Nama Mata Kuliah</th>
-                    <th>SKS</th>
-                    <th>Semester</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="tbl-mk-body">
-                  <tr>
-                    <td colspan="6">Memuat...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-        <!-- /content-area -->
-      </div>
-      <!-- /main-content -->
-    </div>
-    <!-- /main-app -->
-
-    <!-- ============================================================
-     MODAL: Tambah/Edit Mahasiswa
-============================================================ -->
-    <div id="modal-mhs" class="modal-overlay" style="display: none">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h3 id="modal-mhs-title">Tambah Mahasiswa</h3>
-          <button onclick="closeModal('modal-mhs')">✕</button>
         </div>
 
-        <div class="modal-body">
-          <input type="hidden" id="mhs-id" />
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>NIM *</label>
-              <input type="text" id="mhs-nim" />
+        <div class="card">
+            <div class="card-header">
+                <div class="card-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 22 8.5 12 15 2 8.5 12 2"/>
+                        <polyline points="6 11.5 6 17 12 20 18 17 18 11.5"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Selamat Datang</h2>
+                <p class="card-subtitle">Masuk ke akun SIAKAD Anda</p>
             </div>
-
-            <div class="form-group">
-              <label>Nama *</label>
-              <input type="text" id="mhs-nama" />
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="nim">NIM / Email</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </span>
+                        <input class="form-input" type="text" id="nim" placeholder="Masukkan NIM atau Email" autocomplete="username">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </span>
+                        <input class="form-input" type="password" id="password" placeholder="Masukkan password" autocomplete="current-password">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <label class="form-check">
+                        <input type="checkbox" id="remember">
+                        <div class="check-box"></div>
+                        <span class="check-label">Ingat saya</span>
+                    </label>
+                    <a href="#" class="forgot-link">Lupa Password?</a>
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <span class="btn-text">Masuk ke SIAKAD</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </form>
+            
+            <div class="card-footer">
+                <p class="footer-text">
+                    Butuh bantuan? <a href="#">Hubungi Helpdesk</a> &nbsp;·&nbsp; <a href="#">Panduan Login</a>
+                </p>
             </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Jurusan</label>
-              <select id="mhs-jur">
-                <option value="">Pilih Jurusan</option>
-                <option>Matematika</option>
-                <option>Fisika</option>
-                <option>Kimia</option>
-                <option>Biologi</option>
-                <option>Ilmu Komputer</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Program Studi</label>
-              <select id="mhs-program_studi">
-                <option value="">Pilih Prodi</option>
-                <option>Sistem Informasi</option>
-                <option>Teknik Komputer</option>
-                <option>Statistika</option>
-                <option>Manajemen Informatika</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" id="mhs-email" />
-            </div>
-
-            <div class="form-group">
-              <label>Agama</label>
-              <select id="mhs-agama">
-                <option>Islam</option>
-                <option>Kristen</option>
-                <option>Katholik</option>
-                <option>Hindu</option>
-                <option>Budha</option>
-                <option>Khonghucu</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Status</label>
-              <select id="mhs-status">
-                <option>Aktif</option>
-                <option>Semhas</option>
-                <option>Kompre</option>
-                <option>Alumni</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Jenis Kelamin</label>
-              <select id="mhs-jk">
-                <option>Laki-laki</option>
-                <option>Perempuan</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Tempat Lahir</label>
-              <input type="text" id="mhs-tmp_lahir" />
-            </div>
-
-            <div class="form-group">
-              <label>Tanggal Lahir</label>
-              <input type="date" id="mhs-tgl-lahir" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Alamat</label>
-            <textarea id="mhs-alamat"></textarea>
-          </div>
         </div>
-
-        <div class="modal-footer">
-          <button class="btn btn-secondary" onclick="closeModal('modal-mhs')">
-            Batal
-          </button>
-
-          <button class="btn btn-primary" onclick="saveMahasiswa()">
-            Simpan
-          </button>
-        </div>
-      </div>
     </div>
 
-    <!-- MODAL: Tambah/Edit Dosen -->
-    <div id="modal-dsn" class="modal-overlay" style="display: none">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h3 id="modal-dsn-title">Tambah Dosen</h3>
-          <button onclick="closeModal('modal-dsn')">✕</button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="dsn-id" />
-          <div class="form-row">
-            <div class="form-group">
-              <label>NIDN *</label>
-              <input
-                type="text"
-                id="dsn-nidn"
-                placeholder="Contoh: 0031126318"
-              />
-            </div>
-            <div class="form-group">
-              <label>Nama Lengkap *</label>
-              <input
-                type="text"
-                id="dsn-nama"
-                placeholder="Nama dosen + gelar"
-              />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                id="dsn-email"
-                placeholder="email@dosen.ac.id"
-              />
-            </div>
-            <div class="form-group">
-              <label>No. HP</label>
-              <input type="text" id="dsn-hp" placeholder="081234567890" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Status</label>
-            <select id="dsn-status">
-              <option value="Aktif">Aktif</option>
-              <option value="Tidak Aktif">Tidak Aktif</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" onclick="closeModal('modal-dsn')">
-            Batal
-          </button>
-          <button class="btn btn-primary" onclick="saveDosen()">Simpan</button>
-        </div>
-      </div>
-    </div>
+    <script>
+        async function handleLogin(e) {
+          e.preventDefault();
 
-    <!-- MODAL: Tambah/Edit Mata Kuliah -->
-    <div id="modal-mk" class="modal-overlay" style="display: none">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h3 id="modal-mk-title">Tambah Mata Kuliah</h3>
-          <button onclick="closeModal('modal-mk')">✕</button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="mk-id" />
-          <div class="form-row">
-            <div class="form-group">
-              <label>Kode MK *</label>
-              <input type="text" id="mk-kode" placeholder="Contoh: MSI3105" />
-            </div>
-            <div class="form-group">
-              <label>Nama Mata Kuliah *</label>
-              <input type="text" id="mk-nama" placeholder="Nama mata kuliah" />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>SKS</label>
-              <input type="number" id="mk-sks" value="3" min="1" max="6" />
-            </div>
-            <div class="form-group">
-              <label>Semester</label>
-              <input type="number" id="mk-semester" value="1" min="1" max="8" />
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" onclick="closeModal('modal-mk')">
-            Batal
-          </button>
-          <button class="btn btn-primary" onclick="saveMatKul()">Simpan</button>
-        </div>
-      </div>
-    </div>
+          const nim = document.getElementById('nim').value.trim();
+          const pass = document.getElementById('password').value;
+          const btn = e.target.querySelector('.btn-login');
 
-    <!-- Toast notifikasi -->
-    <!-- MODAL: Tukar Password -->
-    <div id="modal-password" class="modal-overlay" style="display: none">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h3>Tukar Password</h3>
-          <button onclick="closeModal('modal-password')">✕</button>
-        </div>
+          if (!nim || !pass) {
+            alert('Lengkapi data!');
+            return;
+          }
 
-        <div class="modal-body">
-          <div class="form-group">
-            <label>Password Lama</label>
-            <input type="password" id="old-password" />
-          </div>
+          btn.querySelector('.btn-text').textContent = 'Memverifikasi...';
+          btn.disabled = true;
 
-          <div class="form-group">
-            <label>Password Baru</label>
-            <input type="password" id="new-password" />
-          </div>
+          try {
+            const response = await fetch('api/login.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                nim: nim,
+                password: pass
+              })
+            });
 
-          <div class="form-group">
-            <label>Konfirmasi Password</label>
-            <input type="password" id="confirm-password" />
-          </div>
-        </div>
+            const result = await response.json();
 
-        <div class="modal-footer">
-          <button
-            class="btn btn-secondary"
-            onclick="closeModal('modal-password')"
-          >
-            Batal
-          </button>
+            if (result.success) {
+              // ── AMBIL ROLE DARI SERVER DAN SIMPAN KE LOCALSTORAGE ──
+              // Mendukung format data "result.user.role" maupun "result.role" langsung
+              const userRole = result.user && result.user.role ? result.user.role : (result.role || 'mahasiswa');
+              localStorage.setItem('role', userRole.toLowerCase());
 
-          <button class="btn btn-primary" onclick="changePassword()">
-            Simpan
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="toast" class="toast" style="display: none"></div>
+              btn.style.background = 'linear-gradient(135deg, #4caf50, #2e7d32)';
+              btn.querySelector('.btn-text').textContent = 'Berhasil Masuk ✓';
 
-    <footer class="footer">© 2026 SIAKAD - Sistem Informasi Akademik</footer>
+              setTimeout(() => {
+                window.location.href = 'dashboard.html';
+              }, 1000);
+            } else {
+              btn.style.background = 'linear-gradient(135deg, #e57373, #c62828)';
+              btn.querySelector('.btn-text').textContent = 'Login Gagal';
 
-    <script src="assets/app.js"></script>
-  </body>
+              alert(result.message || 'NIM atau password salah');
+              btn.disabled = false;
+
+              setTimeout(() => {
+                btn.style.background = '';
+                btn.querySelector('.btn-text').textContent = 'Masuk ke SIAKAD';
+              }, 2000);
+            }
+
+          } catch (error) {
+            console.error(error);
+            alert('Server error');
+            btn.disabled = false;
+            btn.style.background = '';
+            btn.querySelector('.btn-text').textContent = 'Masuk ke SIAKAD';
+          }
+        }
+    </script>
+</body>
 </html>

@@ -344,6 +344,21 @@
         display: none !important;
       }
     </style>
+
+    <script>
+      const role = (localStorage.getItem("role") || "mahasiswa").toLowerCase();
+      const styleBlock = document.createElement("style");
+
+      if (role === "mahasiswa") {
+        styleBlock.innerHTML =
+          "#menu-mhs, #menu-dsn, #btnTambahMK, #thCheck, #thAksi, .activity-card { display: none !important; }";
+      } else if (role === "dosen") {
+        styleBlock.innerHTML =
+          "#menu-dsn, #btnTambahMK, #thCheck, #thAksi, .activity-card { display: none !important; }";
+      }
+
+      document.head.appendChild(styleBlock);
+    </script>
   </head>
   <body>
     <div class="bg-canvas"></div>
@@ -355,12 +370,11 @@
       <div class="brand">SIAKAD <span>UNRI</span></div>
 
       <div class="menu-label">Menu Utama</div>
-      <a href="dashboard.html" class="nav-link active">Dashboard</a>
-      
-      <a href="mahasiswa.html" class="nav-link dosen-admin-only">Mahasiswa</a>
-      
-      <a href="dosen.html" class="nav-link admin-only">Dosen</a>
-      
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+
+      <a href="mahasiswa.html" id="menu-mhs" class="nav-link">Mahasiswa</a>
+      <a href="dosen.html" id="menu-dsn" class="nav-link">Dosen</a>
+
       <a href="matakuliah.html" class="nav-link">Mata Kuliah</a>
 
       <div class="menu-label" style="margin-top: 24px">Pengaturan</div>
@@ -370,7 +384,6 @@
         class="nav-link"
         >Change Password</a
       >
-
       <a href="#" onclick="logout(event)" class="nav-link logout-btn">Logout</a>
     </div>
 
@@ -470,7 +483,7 @@
 
             // PERUBAHAN JS: Atur role ke dalam tag body agar CSS aktif
             const userRole = data.user_aktif.role.toLowerCase();
-            document.body.setAttribute('data-role', userRole);
+            document.body.setAttribute("data-role", userRole);
 
             // Masukkan data jumlah statistik numerik
             const totalMhs = data.statistik.total_mahasiswa;

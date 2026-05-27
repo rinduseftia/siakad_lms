@@ -2,14 +2,19 @@
 // api/dashboard.php  –  SIAKAD v2
 // Statistik dashboard + info user yang sedang login
 
+// Panggil middleware di baris paling atas (sebelum database atau logika lain)
+require_once 'middleware_auth.php'; 
+
 require_once '../config/cors.php';
 require_once '../config/database.php';
 
-/* ── Guard: harus sudah login ── */
-session_start();
-if (empty($_SESSION['logged_in'])) {
-    sendResponse(['error' => 'Akses ditolak. Silakan login terlebih dahulu.'], 401);
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    sendResponse(['success' => false, 'message' => 'Method tidak didukung'], 405);
 }
+
+$conn = getConnection();
+$role = $_SESSION['role'];
+
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     sendResponse(['error' => 'Method tidak didukung'], 405);

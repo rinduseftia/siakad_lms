@@ -114,7 +114,7 @@ INSERT INTO `admin` (`id`, `user_id`, `username`, `password`, `nama`) VALUES
 
 -- dosen: user_id → FK ke users.id
 INSERT INTO `dosen` (`id`, `user_id`, `nidn`, `nama`, `email`, `status`) VALUES
-(1, 2, '0030106906', 'Joko Risanto',             'joko@dosen.ac.id',   'Aktif'),
+(1, 2, '0030106906', 'Joko Risanto','joko@dosen.ac.id','Aktif'),
 (2, 3, '0031126318', 'Zaiful Bahri, S.Si., M.Kom','zaiful@dosen.ac.id', 'Aktif');
 
 -- mahasiswa: nim = PK, user_id → FK ke users.id
