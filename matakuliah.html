@@ -1,28 +1,37 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIAKAD — Data Mata Kuliah</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=600;700&family=DM+Sans:wght=300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=600;700&family=DM+Sans:wght=300;400;500;600&display=swap"
+        rel="stylesheet">
     <style>
         :root {
-            --navy-deep:    #0a1628;
-            --navy-mid:     #112240;
-            --navy-light:   #1a3a6b;
-            --navy-accent:  #1e4d8c;
-            --gold:         #c8a96e;
-            --gold-light:   #e8c98a;
-            --white:        #ffffff;
-            --white-90:     rgba(255,255,255,0.90);
-            --white-70:     rgba(255,255,255,0.70);
-            --white-40:     rgba(255,255,255,0.40);
-            --white-15:     rgba(255,255,255,0.15);
-            --white-08:     rgba(255,255,255,0.08);
-            --glass-bg:     rgba(255,255,255,0.09);
+            --navy-deep: #0a1628;
+            --navy-mid: #112240;
+            --navy-light: #1a3a6b;
+            --navy-accent: #1e4d8c;
+            --gold: #c8a96e;
+            --gold-light: #e8c98a;
+            --white: #ffffff;
+            --white-90: rgba(255, 255, 255, 0.90);
+            --white-70: rgba(255, 255, 255, 0.70);
+            --white-40: rgba(255, 255, 255, 0.40);
+            --white-15: rgba(255, 255, 255, 0.15);
+            --white-08: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.09);
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             min-height: 100vh;
@@ -34,151 +43,525 @@
         }
 
         /* ── Background Canvas ── */
-        .bg-canvas { position: fixed; inset: 0; z-index: -2; background: radial-gradient(ellipse 80% 60% at 20% 30%, rgba(30,77,140,0.55) 0%, transparent 65%), radial-gradient(ellipse 60% 50% at 80% 75%, rgba(17,34,64,0.80) 0%, transparent 60%), linear-gradient(150deg, #0a1628 0%, #112240 50%, #0d1e38 100%); }
-        .bg-grid { position: fixed; inset: 0; z-index: -1; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 60px 60px; }
-        .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: -1; }
-        .orb-1 { width: 420px; height: 420px; background: radial-gradient(circle, rgba(30,77,140,0.45), transparent 70%); top: -100px; left: -100px; }
-        .orb-2 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(200,169,110,0.18), transparent 70%); bottom: -80px; right: -80px; }
+        .bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: radial-gradient(ellipse 80% 60% at 20% 30%, rgba(30, 77, 140, 0.55) 0%, transparent 65%), radial-gradient(ellipse 60% 50% at 80% 75%, rgba(17, 34, 64, 0.80) 0%, transparent 60%), linear-gradient(150deg, #0a1628 0%, #112240 50%, #0d1e38 100%);
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb-1 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(30, 77, 140, 0.45), transparent 70%);
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(200, 169, 110, 0.18), transparent 70%);
+            bottom: -80px;
+            right: -80px;
+        }
 
         /* ── Sidebar ── */
         .sidebar {
-            width: 280px; background: var(--glass-bg); border-right: 1px solid rgba(255,255,255,0.18);
-            backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); 
-            padding: 40px 24px; display: flex; flex-direction: column;
-            position: fixed; height: 100vh; left: 0; top: 0; z-index: 10;
+            width: 280px;
+            background: var(--glass-bg);
+            border-right: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(28px) saturate(160%);
+            -webkit-backdrop-filter: blur(28px) saturate(160%);
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 10;
         }
-        .brand { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--white); margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--white-15); text-align: center; }
-        .brand span { color: var(--gold); }
-        .menu-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--white-40); margin-bottom: 12px; padding-left: 12px; }
-        .nav-link { display: flex; align-items: center; padding: 14px 16px; color: var(--white-70); text-decoration: none; border-radius: 12px; margin-bottom: 8px; transition: all 0.3s ease; font-weight: 500; }
-        .nav-link:hover, .nav-link.active { background: rgba(200,169,110,0.15); color: var(--gold-light); box-shadow: inset 3px 0 0 var(--gold); }
-        .logout-btn { margin-top: auto; background: rgba(229, 57, 53, 0.15); color: #ff8a80; border: 1px solid rgba(229, 57, 53, 0.3); }
-        .logout-btn:hover { background: rgba(229, 57, 53, 0.3); color: white; }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--white-15);
+            text-align: center;
+        }
+
+        .brand span {
+            color: var(--gold);
+        }
+
+        .menu-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--white-40);
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            color: var(--white-70);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(200, 169, 110, 0.15);
+            color: var(--gold-light);
+            box-shadow: inset 3px 0 0 var(--gold);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background: rgba(229, 57, 53, 0.15);
+            color: #ff8a80;
+            border: 1px solid rgba(229, 57, 53, 0.3);
+        }
+
+        .logout-btn:hover {
+            background: rgba(229, 57, 53, 0.3);
+            color: white;
+        }
 
         /* ── Main Content Layout ── */
-        .main-content { 
-            margin-left: 280px; flex: 1; padding: 40px; 
-            height: 100vh; display: flex; flex-direction: column; 
-            overflow: hidden; 
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; animation: slideDown 0.5s ease-out; flex-shrink: 0; }
-        .header-title h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 600; }
-        .header-actions { display: flex; gap: 12px; }
-        
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: slideDown 0.5s ease-out;
+            flex-shrink: 0;
+        }
+
+        .header-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
         /* ── Buttons ── */
-        .btn { padding: 10px 20px; border-radius: 8px; font-family: 'DM Sans'; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
-        .btn-add { background: var(--gold); color: var(--navy-deep); box-shadow: 0 4px 15px rgba(200,169,110,0.3); }
-        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,169,110,0.5); }
-        .btn-delete-bulk { background: rgba(229, 57, 53, 0.2); color: #ff8a80; border: 1px solid rgba(229, 57, 53, 0.4); display: none; }
-        .btn-delete-bulk:hover { background: rgba(229, 57, 53, 0.4); color: white; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
-        .btn-edit { background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--white-15); margin-right: 5px; }
-        .btn-edit:hover { background: rgba(255,255,255,0.2); color: var(--gold); }
-        .btn-del { background: rgba(229, 57, 53, 0.1); color: #ff8a80; border: 1px solid rgba(229, 57, 53, 0.3); }
-        .btn-del:hover { background: rgba(229, 57, 53, 0.3); color: white; }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'DM Sans';
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-add {
+            background: var(--gold);
+            color: var(--navy-deep);
+            box-shadow: 0 4px 15px rgba(200, 169, 110, 0.3);
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(200, 169, 110, 0.5);
+        }
+
+        .btn-delete-bulk {
+            background: rgba(229, 57, 53, 0.2);
+            color: #ff8a80;
+            border: 1px solid rgba(229, 57, 53, 0.4);
+            display: none;
+        }
+
+        .btn-delete-bulk:hover {
+            background: rgba(229, 57, 53, 0.4);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .btn-edit {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--white-15);
+            margin-right: 5px;
+        }
+
+        .btn-edit:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--gold);
+        }
+
+        .btn-del {
+            background: rgba(229, 57, 53, 0.1);
+            color: #ff8a80;
+            border: 1px solid rgba(229, 57, 53, 0.3);
+        }
+
+        .btn-del:hover {
+            background: rgba(229, 57, 53, 0.3);
+            color: white;
+        }
 
         /* ── Scrollable Table Area ── */
         .table-wrapper {
-            background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.18); border-radius: 20px;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px rgba(10,22,40,0.3); flex: 1; overflow-y: auto;
-            animation: fadeIn 0.6s ease-out both; margin-bottom: 20px;
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(10, 22, 40, 0.3);
+            flex: 1;
+            overflow-y: auto;
+            animation: fadeIn 0.6s ease-out both;
+            margin-bottom: 20px;
         }
 
-        .table-wrapper::-webkit-scrollbar { width: 8px; }
-        .table-wrapper::-webkit-scrollbar-track { background: transparent; }
-        .table-wrapper::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.3); border-radius: 10px; }
-        .table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+        .table-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed; }
-        
+        .table-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(200, 169, 110, 0.3);
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            table-layout: fixed;
+        }
+
         thead th {
-            position: sticky; top: 0; background: #0f1d33; 
-            padding: 16px 20px; font-size: 12px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-light);
-            border-bottom: 1px solid var(--white-15); z-index: 5;
+            position: sticky;
+            top: 0;
+            background: #0f1d33;
+            padding: 16px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gold-light);
+            border-bottom: 1px solid var(--white-15);
+            z-index: 5;
         }
-        
-        tbody td { padding: 16px 20px; font-size: 14px; color: var(--white-90); border-bottom: 1px solid rgba(255,255,255,0.08); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        tbody tr { transition: background 0.2s; }
-        tbody tr:hover { background: rgba(255,255,255,0.04); }
-        
-        /* ── Lebar Kolom Proporsional ── */
-        .col-check { width: 60px; text-align: center; }
-        .col-no { width: 65px; text-align: center; }
-        .col-kode { width: 130px; }
-        .col-nama { width: auto; }
-        .col-sks { width: 95px; text-align: center; }
-        .col-semester { width: 140px; text-align: center; }
-        .col-status { width: 110px; text-align: center; }
-        .col-aksi { width: 165px; text-align: center; }
+
+        tbody td {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--white-90);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* ── Lebar Kolom Proporsional (Default Admin) ── */
+        .col-check {
+            width: 60px;
+            text-align: center;
+        }
+
+        .col-no {
+            width: 65px;
+            text-align: center;
+        }
+
+        .col-kode {
+            width: 130px;
+        }
+
+        .col-nama {
+            width: auto;
+        }
+
+        .col-sks {
+            width: 95px;
+            text-align: center;
+        }
+
+        .col-semester {
+            width: 140px;
+            text-align: center;
+        }
+
+        .col-status {
+            width: 110px;
+            text-align: center;
+        }
+
+        .col-aksi {
+            width: 165px;
+            text-align: center;
+        }
 
         /* Badges */
-        .status-badge { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-        .status-aktif { background: rgba(76, 175, 80, 0.15); color: #81c784; border: 1px solid rgba(76, 175, 80, 0.3); }
-        .status-nonaktif { background: rgba(255, 152, 0, 0.15); color: #ffb74d; border: 1px solid rgba(255, 152, 0, 0.3); }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-aktif {
+            background: rgba(76, 175, 80, 0.15);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-nonaktif {
+            background: rgba(255, 152, 0, 0.15);
+            color: #ffb74d;
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
 
         /* Custom Checkbox */
-        .check-container { display: flex; align-items: center; justify-content: center; cursor: pointer; height: 100%; }
-        .check-container input { display: none; }
-        .check-box { width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--white-40); background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .check-container input:checked + .check-box { background: var(--gold); border-color: var(--gold); }
-        .check-container input:checked + .check-box::after { content: ''; width: 5px; height: 9px; border: 2px solid #0a1628; border-top: none; border-left: none; transform: rotate(45deg) translate(-1px,-1px); }
+        .check-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .check-container input {
+            display: none;
+        }
+
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid var(--white-40);
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .check-container input:checked+.check-box {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .check-container input:checked+.check-box::after {
+            content: '';
+            width: 5px;
+            height: 9px;
+            border: 2px solid #0a1628;
+            border-top: none;
+            border-left: none;
+            transform: rotate(45deg) translate(-1px, -1px);
+        }
 
         /* ── CSS Modal Form Tambah ── */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(5, 11, 20, 0.7);
-            backdrop-filter: blur(10px); z-index: 100;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 11, 20, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         .modal-box {
-            background: #0f1d33; border: 1px solid rgba(255,255,255,0.15);
-            width: 100%; max-width: 500px; border-radius: 20px; padding: 30px;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.5);
-            transform: translateY(-30px); transition: transform 0.3s ease;
+            background: #0f1d33;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+            transform: translateY(-30px);
+            transition: transform 0.3s ease;
         }
-        .modal-overlay.active .modal-box { transform: translateY(0); }
-        
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .modal-header h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold-light); }
-        .close-modal { background: transparent; border: none; color: var(--white-40); font-size: 22px; cursor: pointer; }
-        .close-modal:hover { color: white; }
-        
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--white-70); margin-bottom: 8px; letter-spacing: 0.5px; }
+
+        .modal-overlay.active .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: var(--gold-light);
+        }
+
+        .close-modal {
+            background: transparent;
+            border: none;
+            color: var(--white-40);
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--white-70);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
         .form-control {
-            width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.05);
-            border: 1px solid var(--white-15); border-radius: 8px; color: white;
-            font-family: 'DM Sans', sans-serif; font-size: 14px; transition: border 0.2s;
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--white-15);
+            border-radius: 8px;
+            color: white;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            transition: border 0.2s;
         }
-        .form-control:focus { outline: none; border-color: var(--gold); background: rgba(255,255,255,0.08); }
-        
-        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 28px; }
-        .btn-cancel { background: rgba(255,255,255,0.08); color: white; border: 1px solid var(--white-15); }
-        .btn-cancel:hover { background: rgba(255,255,255,0.15); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: 1px solid var(--white-15);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ── SYSTEM HAK AKSES CLEAN BERBASIS CSS ATTRIBUTE ── */
+        body[data-role="mahasiswa"] .admin-only,
+        body[data-role="dosen"] .admin-only {
+            display: none !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
-
-    <script>
-        const role = (localStorage.getItem('role') || 'mahasiswa').toLowerCase();
-        const styleBlock = document.createElement('style');
-        
-        // CSS yang otomatis ditambahkan sebelum halaman digambar
-        if (role === 'mahasiswa') {
-            styleBlock.innerHTML = '#menu-mhs, #menu-dsn, #btnTambahMK, #thCheck, #thAksi, .activity-card { display: none !important; }';
-        } else if (role === 'dosen') {
-            styleBlock.innerHTML = '#menu-dsn, #btnTambahMK, #thCheck, #thAksi, .activity-card { display: none !important; }';
-        }
-        
-        document.head.appendChild(styleBlock);
-    </script>
 </head>
+
 <body>
 
     <div class="bg-canvas"></div>
@@ -188,16 +571,16 @@
 
     <div class="sidebar">
         <div class="brand">SIAKAD <span>UNRI</span></div>
-        
+
         <div class="menu-label">Menu Utama</div>
         <a href="dashboard.html" class="nav-link">Dashboard</a>
-        <a href="mahasiswa.html" id="menu-mhs" class="nav-link">Mahasiswa</a>
-        <a href="dosen.html" id="menu-dsn" class="nav-link">Dosen</a>
+        <a href="mahasiswa.html" class="nav-link">Mahasiswa</a>
+        <a href="dosen.html" class="nav-link">Dosen</a>
         <a href="matakuliah.html" class="nav-link active">Mata Kuliah</a>
-        
+
         <div class="menu-label" style="margin-top: 24px;">Pengaturan</div>
         <a href="#" onclick="alert('Halaman Change Password belum dibuat')" class="nav-link">Change Password</a>
-        
+
         <a href="#" onclick="logout()" class="nav-link logout-btn">Logout</a>
     </div>
 
@@ -207,8 +590,9 @@
                 <h1>Data Mata Kuliah</h1>
             </div>
             <div class="header-actions">
-                <button class="btn btn-delete-bulk" id="btnBulkDelete" onclick="deleteSelected()" style="display:none;">Hapus Terpilih</button>
-                <button class="btn btn-add" id="btnTambahMK" onclick="openModal()">+ Tambah Mata Kuliah</button>
+                <button class="btn btn-delete-bulk admin-only" id="btnBulkDelete" onclick="deleteSelected()">Hapus
+                    Terpilih</button>
+                <button class="btn btn-add admin-only" onclick="openModal()">+ Tambah Mata Kuliah</button>
             </div>
         </div>
 
@@ -216,7 +600,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th class="col-check" id="thCheck">
+                        <th class="col-check admin-only">
                             <label class="check-container">
                                 <input type="checkbox" id="checkAll" onchange="toggleAll(this)">
                                 <div class="check-box"></div>
@@ -228,11 +612,13 @@
                         <th class="col-sks">SKS</th>
                         <th class="col-semester">Semester</th>
                         <th class="col-status">Status</th>
-                        <th class="col-aksi" id="thAksi">Aksi</th>
+                        <th class="col-aksi admin-only">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="8" style="text-align: center; padding: 30px;">Memuat data mata kuliah...</td></tr>
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 30px;">Memuat data mata kuliah...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -261,6 +647,13 @@
                     <label>Semester (1 - 8)</label>
                     <input type="number" id="mk_semester" class="form-control" min="1" max="8" value="1" required>
                 </div>
+                <div class="form-group">
+                    <label>Status Mata Kuliah</label>
+                    <select id="mk_status" class="form-control">
+                        <option value="Wajib">Wajib</option>
+                        <option value="Pilihan">Pilihan</option>
+                    </select>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-cancel" onclick="closeModal()">Batal</button>
                     <button type="submit" class="btn btn-add">Simpan Data</button>
@@ -271,19 +664,20 @@
 
     <script>
         let matkulData = [];
+
+        // Ambil role dari localStorage yang di-set sewaktu login. Default ke 'mahasiswa' jika kosong.
         const currentRole = (localStorage.getItem('role') || 'mahasiswa').toLowerCase();
 
-        // KARENA KITA SUDAH PAKAI KODE ANTI-GLITCH DI ATAS, 
-        // KITA TIDAK PERLU LAGI MENYEMBUNYIKAN MENU DI SINI. CUKUP LANGSUNG LOAD DATA SAJA.
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-        });
+        // Mengatur hak akses global via attribute body secara instan saat halaman dimuat
+        function initAuth() {
+            document.body.setAttribute('data-role', currentRole);
+        }
 
         async function loadData() {
             try {
                 const response = await fetch('api/mata_kuliah.php');
-                if (!response.ok) throw new Error('Gagal memuat data.');
-                
+                if (!response.ok) throw new Error('Gagal memuat data atau sesi login habis.');
+
                 matkulData = await response.json();
                 renderTable();
             } catch (error) {
@@ -308,47 +702,43 @@
                 const statusClass = statusText.toLowerCase() === 'wajib' ? 'status-aktif' : 'status-nonaktif';
 
                 const tr = document.createElement('tr');
-                
-                let rowHTML = `
+                tr.innerHTML = `
+                    <td class="col-check admin-only">
+                        <label class="check-container">
+                            <input type="checkbox" class="check-item" value="${mk.id}" onchange="checkSelection()">
+                            <div class="check-box"></div>
+                        </label>
+                    </td>
                     <td class="col-no" style="color: var(--white-40); font-size: 13px;">${index + 1}</td>
                     <td class="col-kode" style="font-family: monospace; font-weight: 600; color: var(--gold-light); letter-spacing: 0.5px;">${mk.kode}</td>
                     <td class="col-nama" style="font-weight: 500;" title="${mk.nama}">${mk.nama}</td>
                     <td class="col-sks">${mk.sks} SKS</td>
                     <td class="col-semester">Semester ${mk.semester}</td>
                     <td class="col-status"><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td class="col-aksi admin-only">
+                        <button class="btn btn-sm btn-edit" onclick="editData(${mk.id})">Edit</button>
+                        <button class="btn btn-sm btn-del" onclick="deleteSingle(${mk.id})">Hapus</button>
+                    </td>
                 `;
-
-                if (currentRole === 'admin') {
-                    rowHTML = `
-                        <td class="col-check">
-                            <label class="check-container">
-                                <input type="checkbox" class="check-item" value="${mk.id}" onchange="checkSelection()">
-                                <div class="check-box"></div>
-                            </label>
-                        </td>
-                        ${rowHTML}
-                        <td class="col-aksi">
-                            <button class="btn btn-sm btn-edit" onclick="alert('Edit data ID: ${mk.id}')">Edit</button>
-                            <button class="btn btn-sm btn-del" onclick="deleteSingle(${mk.id})">Hapus</button>
-                        </td>
-                    `;
-                }
-                
-                tr.innerHTML = rowHTML;
                 tbody.appendChild(tr);
             });
-            
+
             if (currentRole === 'admin') {
                 document.getElementById('checkAll').checked = false;
-                checkSelection(); 
+                checkSelection();
             }
         }
 
-        function openModal() {
-            if (currentRole !== 'admin') return;
-            document.getElementById('formMatkul').reset();
-            document.getElementById('addModal').classList.add('active');
-        }
+       function openModal() {
+    if (currentRole !== 'admin') return;
+
+    document.getElementById('formMatkul').reset();
+
+    // mode tambah
+    document.getElementById('formMatkul').onsubmit = (e) => saveData(e);
+
+    document.getElementById('addModal').classList.add('active');
+}
 
         function closeModal() {
             document.getElementById('addModal').classList.remove('active');
@@ -362,7 +752,8 @@
                 kode: document.getElementById('mk_kode').value,
                 nama: document.getElementById('mk_nama').value,
                 sks: parseInt(document.getElementById('mk_sks').value),
-                semester: parseInt(document.getElementById('mk_semester').value)
+                semester: parseInt(document.getElementById('mk_semester').value),
+                status: document.getElementById('mk_status').value
             };
 
             try {
@@ -387,6 +778,64 @@
             }
         }
 
+        async function editData(id) {
+    const mk = matkulData.find(item => item.id == id);
+
+    if (!mk) {
+        alert('Data tidak ditemukan');
+        return;
+    }
+
+    // isi form modal
+    document.getElementById('mk_kode').value = mk.kode;
+    document.getElementById('mk_nama').value = mk.nama;
+    document.getElementById('mk_sks').value = mk.sks;
+    document.getElementById('mk_semester').value = mk.semester;
+    document.getElementById('mk_status').value = mk.status || 'Wajib';
+
+    // buka modal
+    document.getElementById('addModal').classList.add('active');
+
+    // ubah mode form jadi update
+    document.getElementById('formMatkul').onsubmit = async function(event) {
+        event.preventDefault();
+
+        const payload = {
+            kode: document.getElementById('mk_kode').value,
+            nama: document.getElementById('mk_nama').value,
+            sks: parseInt(document.getElementById('mk_sks').value),
+            semester: parseInt(document.getElementById('mk_semester').value),
+            status: document.getElementById('mk_status').value
+        };
+
+        try {
+            const response = await fetch(`api/mata_kuliah.php?id=${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                closeModal();
+                loadData();
+
+                // balikin lagi ke mode tambah
+                document.getElementById('formMatkul').onsubmit = (e) => saveData(e);
+            } else {
+                alert(result.error || 'Gagal update');
+            }
+
+        } catch (error) {
+            alert('Gangguan koneksi');
+            console.error(error);
+        }
+    };
+}
         function toggleAll(source) {
             if (currentRole !== 'admin') return;
             const checkboxes = document.querySelectorAll('.check-item');
@@ -441,10 +890,12 @@
             }
         }
 
-        function logout() { 
-            localStorage.clear();
-            window.location.href = 'index.html'; 
-        }
+        function logout() { window.location.href = 'index.html'; }
+
+        // Eksekusi hak akses sebelum merender data
+        initAuth();
+        document.addEventListener('DOMContentLoaded', loadData);
     </script>
 </body>
+
 </html>

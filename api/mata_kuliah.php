@@ -59,6 +59,7 @@ switch ($method) {
         $nama     = trim($body['nama']);
         $sks      = (int) ($body['sks']      ?? 3);
         $semester = (int) ($body['semester'] ?? 1);
+        $status = $body['status'] ?? 'Wajib';
 
         // Validasi range
         if ($sks < 1 || $sks > 6) {
@@ -78,9 +79,9 @@ switch ($method) {
         $chk->close();
 
         $stmt = $conn->prepare(
-            "INSERT INTO mata_kuliah (kode, nama, sks, semester) VALUES (?, ?, ?, ?)"
+            "INSERT INTO mata_kuliah (kode, nama, sks, semester, status) VALUES (?, ?, ?, ?, ?)"
         );
-        $stmt->bind_param('ssii', $kode, $nama, $sks, $semester);
+        $stmt->bind_param('ssiis', $kode, $nama, $sks, $semester, $status);
 
         if ($stmt->execute()) {
             sendResponse([
@@ -113,7 +114,7 @@ switch ($method) {
         $nama     = trim($body['nama']);
         $sks      = (int) ($body['sks']      ?? 3);
         $semester = (int) ($body['semester'] ?? 1);
-
+        $status = $body['status'] ?? 'Wajib';
         if ($sks < 1 || $sks > 6)      sendResponse(['error' => 'SKS harus antara 1–6'], 422);
         if ($semester < 1 || $semester > 8) sendResponse(['error' => 'Semester harus antara 1–8'], 422);
 
@@ -127,9 +128,9 @@ switch ($method) {
         $chk->close();
 
         $stmt = $conn->prepare(
-            "UPDATE mata_kuliah SET kode=?, nama=?, sks=?, semester=? WHERE id=?"
+            "UPDATE mata_kuliah SET kode=?, nama=?, sks=?, semester=?, status=? WHERE id=?"
         );
-        $stmt->bind_param('ssiii', $kode, $nama, $sks, $semester, $id);
+        $stmt->bind_param('ssiisi', $kode, $nama, $sks, $semester, $status, $id);
 
         if ($stmt->execute()) {
             if ($stmt->affected_rows > 0) {
