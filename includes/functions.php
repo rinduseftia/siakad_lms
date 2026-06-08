@@ -277,7 +277,10 @@ function change_user_password(int $userId, string $oldPassword, string $newPassw
         return false;
     }
 
-    db_query('UPDATE users SET password = ? WHERE id = ?', 'si', [$newPassword, $userId]);
+    // Hash password baru sebelum disimpan ke database
+    $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+    
+    db_query('UPDATE users SET password = ? WHERE id = ?', 'si', [$hashedNewPassword, $userId]);
     return true;
 }
 
@@ -287,10 +290,14 @@ function create_user_account(string $username, string $role, string $status = 'A
     if ($exists) {
         throw new RuntimeException("Username $username sudah digunakan.");
     }
+    
+    // Hash password default (yang disetting sama dengan username)
+    $hashedPassword = password_hash($username, PASSWORD_DEFAULT);
+    
     db_query(
         'INSERT INTO users (username, password, role, status) VALUES (?, ?, ?, ?)',
         'ssss',
-        [$username, $username, $role, $status]
+        [$username, $hashedPassword, $role, $status] // Gunakan variabel $hashedPassword
     );
     return db_insert_id();
 }
@@ -369,7 +376,10 @@ function reset_user_password(int $userId): bool
         $default = $d['nidn'] ?? $default;
     }
 
-    db_query('UPDATE users SET password = ? WHERE id = ?', 'si', [$default, $userId]);
+    // Hash password yang akan direset
+    $hashedDefault = password_hash($default, PASSWORD_DEFAULT);
+
+    db_query('UPDATE users SET password = ? WHERE id = ?', 'si', [$hashedDefault, $userId]);
     create_notification($userId, 'Password Anda telah direset ke default.');
     return true;
 }
