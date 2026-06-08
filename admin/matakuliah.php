@@ -5,6 +5,7 @@ require_once __DIR__ . '/../includes/layout.php';
 require_role('admin');
 
 $filterSem = (int)($_GET['semester'] ?? 0);
+$search = trim($_GET['search'] ?? '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -20,7 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         flash('success', 'Status mata kuliah diperbarui.');
     }
-    redirect('admin/matakuliah.php' . ($filterSem ? "?semester=$filterSem" : ''));
+    
+    // Redirect dengan mempertahankan filter
+    $queryParams = [];
+    if ($filterSem) $queryParams[] = "semester=$filterSem";
+    if ($search) $queryParams[] = "search=" . urlencode($search);
+    $queryString = !empty($queryParams) ? '?' . implode('&', $queryParams) : '';
+    
+    redirect('admin/matakuliah.php' . $queryString);
 }
 
 if (isset($_GET['hapus'])) {
@@ -33,20 +41,39 @@ $sql = "SELECT mk.*, GROUP_CONCAT(DISTINCT d.nama ORDER BY d.nama SEPARATOR ', '
         FROM mata_kuliah mk
         LEFT JOIN jadwal j ON j.kode_mk = mk.kode
         LEFT JOIN dosen d ON d.nidn = j.nidn";
-$params = []; $types = '';
+
+$whereClauses = [];
+$params = [];
+$types = '';
+
 if ($filterSem) {
-    $sql .= ' WHERE mk.semester = ?';
+    $whereClauses[] = 'mk.semester = ?';
     $params[] = $filterSem;
-    $types = 'i';
+    $types .= 'i';
 }
+
+if ($search) {
+    $whereClauses[] = '(mk.kode LIKE ? OR mk.nama LIKE ?)';
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+    $types .= 'ss';
+}
+
+if ($whereClauses) {
+    $sql .= ' WHERE ' . implode(' AND ', $whereClauses);
+}
+
 $sql .= ' GROUP BY mk.id ORDER BY mk.semester, mk.kode';
 $rows = db_fetch_all($sql, $types, $params);
 $semesters = db_fetch_all('SELECT DISTINCT semester FROM mata_kuliah ORDER BY semester');
 
 render_layout_start('Mata Kuliah', 'admin', admin_menu('matakuliah'));
 ?>
-<div class="page-toolbar">
-    <form method="get">
+<div class="page-toolbar d-flex flex-wrap gap-2 align-items-center">
+    <form method="get" class="m-0">
+        <?php if (!empty($_GET['search'])): ?>
+            <input type="hidden" name="search" value="<?= e($_GET['search']) ?>">
+        <?php endif; ?>
         <select name="semester" class="form-select form-select-sm" style="min-width:160px" onchange="this.form.submit()">
             <option value="0">Semua Semester</option>
             <?php foreach ($semesters as $s): ?>
@@ -54,8 +81,10 @@ render_layout_start('Mata Kuliah', 'admin', admin_menu('matakuliah'));
             <?php endforeach; ?>
         </select>
     </form>
+    
     <button type="button" id="bulkDeleteBtn" class="btn-genz btn-genz-danger btn-genz-sm">Hapus Terpilih</button>
-    <form method="post" class="d-flex gap-2 align-items-center" data-bulk-sync>
+    
+    <form method="post" class="d-flex gap-2 align-items-center m-0" data-bulk-sync>
         <input type="hidden" name="action" value="bulk_status">
         <input type="hidden" name="ids" id="bulkIds2">
         <select name="bulk_status" class="form-select form-select-sm" style="min-width:110px">
@@ -63,13 +92,28 @@ render_layout_start('Mata Kuliah', 'admin', admin_menu('matakuliah'));
         </select>
         <button type="submit" class="btn-genz btn-genz-outline btn-genz-sm">Ubah Status</button>
     </form>
-    <span class="toolbar-spacer"></span>
+    
+    <span class="toolbar-spacer flex-grow-1"></span>
+    
+    <form method="get" class="d-flex gap-2 m-0 align-items-center">
+        <?php if ($filterSem): ?>
+            <input type="hidden" name="semester" value="<?= $filterSem ?>">
+        <?php endif; ?>
+        <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari Kode atau Nama..." value="<?= e($_GET['search'] ?? '') ?>" style="min-width:200px">
+        <button type="submit" class="btn-genz btn-genz-sm">Cari</button>
+        <?php if (!empty($_GET['search']) || $filterSem > 0): ?>
+            <a href="matakuliah.php" class="btn-genz btn-genz-outline btn-genz-sm">Reset</a>
+        <?php endif; ?>
+    </form>
+
     <a href="matakuliah_form.php" class="btn-genz btn-genz-sm">Tambah Mata Kuliah</a>
 </div>
+
 <form id="bulkForm" method="post" class="d-none">
     <input type="hidden" name="action" value="bulk_delete">
     <input type="hidden" name="ids" id="bulkIds">
 </form>
+
 <div class="glass-card p-0 overflow-hidden">
     <div class="table-wrap">
         <table class="table-glass" id="dataTable">
