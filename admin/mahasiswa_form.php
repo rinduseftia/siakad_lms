@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             db_query(
                 "UPDATE mahasiswa SET nim=?, nama=?, jur=?, program_studi=?, angkatan=?, semester_sekarang=?,
                  id_dosen_wali=?, status=?, email=?, agama=?, jk=?, tmp_lahir=?, tgl_lahir=?, alamat=? WHERE nim=?",
-                'ssssiissssssss',
+                'ssssiisssssssss',
                 [$data['nim'], $data['nama'], $data['jur'], $data['program_studi'], $data['angkatan'], $data['semester_sekarang'],
                  $data['id_dosen_wali'], $data['status'], $data['email'], $data['agama'], $data['jk'],
                  $data['tmp_lahir'], $data['tgl_lahir'], $data['alamat'], $oldNim]
