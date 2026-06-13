@@ -4,7 +4,6 @@ require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/layout.php';
 require_role('admin');
 
-// Bulk delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'bulk_delete') {
     $ids = array_filter(explode(',', $_POST['ids'] ?? ''));
     foreach ($ids as $nim) {
@@ -15,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'bulk_
     redirect('admin/mahasiswa.php');
 }
 
-// Single delete
 if (isset($_GET['hapus'])) {
     $nim = $_GET['hapus'];
     delete_mahasiswa_cascade($nim);
